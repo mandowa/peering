@@ -1,5 +1,9 @@
 import requests
 import json
+import sqlite3
+
+db = sqlite3.connect("ix.db")
+c = db.cursor()
 
 twitch_as = requests.get('https://peeringdb.com/api/net/1956')
 
@@ -8,8 +12,11 @@ obj = {}
 
 for i in ix['data'][0]['netixlan_set']:
 	if i['ix_id'] not in obj:
-		obj[i['ix_id']] = i['name']
-	    # print u"name: {0}, ix_id: {1}".format(i['name'], i['ix_id'])
+		obj[i['ix_id']] = [i['name'],i['speed']]
+		#c.execute('insert into twitch_ix (ID,NAME,SPEED) VALUES(%s,%s,%s); )
+		print (obj)
+                # print u"name: {0}, ix_id: {1}".format(i['name'], i['ix_id'])
+
 obj1 = ','.join([str(x) for x in obj.keys()])
 
 
