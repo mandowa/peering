@@ -18,7 +18,7 @@ ixname = requests.get(ixurl)
 ixname = json.loads(ixname.text)
 obj_list = list(obj.values())
 
-print (obj_list[0])
+print (obj_list[0] , '--- [have below member]')
 
 netobj = []
 for i in ixname['data'][0]['net_set'] :
