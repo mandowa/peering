@@ -30,33 +30,37 @@ for key ,value in ixdataobj.items():
     c.execute('insert or replace into twitch_ix (ID,IXID,NAME,SPEED,IP4,IP6) VALUES(?,?,?,?,?,?);',(key,value[0],value[1],value[2],value[3],value[4]))
 
 
-## Get NETID from IXID
+##Query NETID from IXID
 
-db_netixid = c.execute('select IXID from twitch_ix')
+db_netixid = c.execute('select distinct IXID from twitch_ix')
 ix_netid = []
-for row in db_netixid:
-	if row[0] not in ix_netid:
-		ix_netid.append((row[0]))
+for i in db_netixid:
+	ix_netid.append(i[0])	
 
 ix_netid = ','.join([str(x) for x in ix_netid])
-
 
 netdata_url = "https://peeringdb.com/api/ixlan?ix_id__in=%s&depth=1" % ix_netid
 netdata_data = requests.get(netdata_url)
 netdata_data = json.loads(netdata_data.text)
 net_setid_value =[]
+c.execute('drop table ix_member;')
+c.execute('CREATE TABLE ix_member (IXID INT  ,NETID INT)')
+db.commit()
 for i in netdata_data['data']:
-	for y in i['net_set']:
-		if y not in net_setid_value:
-			net_setid = [i['ix_id'],y] 
-			#Insert IXID:NETID to table
-			c.execute('insert or replace into ix_member (IXID,NETID) VALUES (?,?);',(net_setid[0],net_setid[1]))
-			net_setid_value.append(y)			
-
-split = (len(net_setid_value)/3)
+        for y in i['net_set']:
+                net_setid = [i['ix_id'],y]
+                c.execute('insert or replace into ix_member (IXID,NETID) VALUES (?,?);',(net_setid[0],net_setid[1]))
+                if y not in net_setid_value:
+                        #print (y)
+                        #net_setid = [i['ix_id'],y]
+                        #Insert IXID:NETID to table
+                        #c.execute('insert or replace into ix_member (IXID,NETID) VALUES (?,?);',(net_setid[0],net_setid[1]))
+                        net_setid_value.append(y)
+db.commit()
+split = round((len(net_setid_value)/3))
 split2 = split*2
 
-## Query NET name ASN from NETID
+## Get NET(NAME ASN) from NETID
 
 net_setid_value_1 = ','.join([str(x) for x in net_setid_value[:split]])			
 net_setid_value_2 = ','.join([str(x) for x in net_setid_value[split:split2]])
