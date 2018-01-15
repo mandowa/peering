@@ -19,7 +19,7 @@ def index():
 	speed = con.execute('select SPEED from twitch_ix')
 	for i in speed:
 		s1 += i['SPEED']
-	s1 = s1/1000
+	s1 = int(s1/1000)
 	return render_template('new_index.htm',twitch_ix = twitch_ix,member=member,speed=s1)
 
 app.config.from_object(__name__)
