@@ -43,7 +43,7 @@ netdata_url = "https://peeringdb.com/api/ixlan?ix_id__in=%s&depth=1" % ix_netid
 netdata_data = requests.get(netdata_url)
 netdata_data = json.loads(netdata_data.text)
 net_setid_value =[]
-c.execute('drop table ix_member;')
+c.execute('drop table if exists ix_member;')
 c.execute('CREATE TABLE ix_member (IXID INT  ,NETID INT)')
 db.commit()
 for i in netdata_data['data']:
@@ -104,10 +104,30 @@ for key ,value in netset_obj3.items():
         c.execute('insert or replace into NETSET (ID,NAME,ASN) VALUES (?,?,?);',(key,value[0],value[1]))
 
 
+#merg data to New_DB
 
-#for key ,value in net_setid.items():
-#	print ("{0},{1}".format(key,value))
-#	c.execute('insert or replace into ix_member (IXID,NETID) VALUES (?,?);',(key,value))
+twitch_ix = con.execute('select DISTINCT twitch_ix.IXID from twitch_ix')
+c.execute('drop table if exists merge_new')
+c.execute('create table merge_new (IXNAME TEXT,NAME TEXT,ASN INT)')
+db.commit()
+for i in twitch_ix:
+
+        ik = (i['IXID'],)
+        pi = c.execute('select NAME from twitch_ix where IXID =?',ik)
+
+        for io in pi:
+
+                pi = io
+
+        ix_net = c.execute('select ix_member.NETID from ix_member where ix_member.IXID = ?',ik)
+
+        for u in ix_net:
+
+                kb = (u['NETID'],)
+                pp = c.execute('select NETSET.NAME ,NETSET.ASN from NETSET where NETSET.ID = ?',kb)
+
+                for ll in pp:
+                        c.execute('insert or replace into merge_new (IXNAME,NAME,ASN) VALUES(?,?,?);',(pi['NAME'],ll['NAME'],ll['ASN']))
 
 
 	
