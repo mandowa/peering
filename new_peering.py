@@ -104,7 +104,7 @@ for key ,value in netset_obj3.items():
         c.execute('insert or replace into NETSET (ID,NAME,ASN) VALUES (?,?,?);',(key,value[0],value[1]))
 
 
-#merg data to New_DB
+#merge data to New_DB
 
 twitch_ix = con.execute('select DISTINCT twitch_ix.IXID from twitch_ix')
 c.execute('drop table if exists merge_new')
