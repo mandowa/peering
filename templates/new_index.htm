@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>AS46489 Peering Status</title>
+  </head>
+  <body>
+    <h1>AS46489 Public IX peering</h1>
+    <ul>
+      <li><h3>Twitch Public Peering Exchange Points <font color=blue><font size=3>Total Exchange Bandwitdh = {{speed}} Gbps</font></font></li></h3>
+{% for i in twitch_ix %}
+	{{ i['NAME'] }}  <B>IPv4 :</B> {{ i['IP4'] }} <B>IPv6:</B> {{ i['IP6'] }} <B>Speed:</B> {{ i['SPEED']/1000 }}G <br>
+{% endfor %}
+      <li><h3>Twitch All peering member in Exchange Points </h3></li>
+
+{% for k in member %}
+        {{ k['IXNAME'] }}(Member): <B>{{ k['NAME'] }}</B> (ASN{{ k['ASN'] }})  <br>
+{% endfor %}
+    </ul>
+  </body>
+</html>
